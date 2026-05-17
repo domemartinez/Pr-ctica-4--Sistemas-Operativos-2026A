@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <sys/time.h>
+#include <pthread.h>
+
+// Variables globales para almacenar el tiempo de inicio, fin y el acumulado
+struct timeval tinicio, tfin;
+double total = 0.0;
+
+void* hilo(void* arg) {
+    gettimeofday(&tfin, NULL);
+
+    double tiempo = (tfin.tv_sec - tinicio.tv_sec) * 1000000.0 + (tfin.tv_usec - tinicio.tv_usec);
+    total += tiempo;
+
+    return NULL;
+}
+
+int main() {
+    int i;
+    pthread_t h;
+
+    for (i = 0; i < 1000000; i++) {
+        gettimeofday(&tinicio, NULL);
+
+        pthread_create(&h, NULL, hilo, NULL);
+        pthread_join(h, NULL);
+    }
+
+    printf("Tiempo total: %f microsegundos\n", total);
+
+    return 0;
+}
